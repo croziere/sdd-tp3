@@ -16,5 +16,6 @@ arbre_t lienVertical(arbre_t);
 arbre_t lienHorizontal(arbre_t);
 arbre_t initialiserArbre();
 noeud_t * creerNoeud();
+void    libererArbre(arbre_t);
 
 #endif

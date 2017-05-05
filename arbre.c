@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "arbre.h"
+#include "pile.h"
 
 void insererContent(arbre_t arbre, arbre_content_t content)
 {
@@ -34,3 +35,31 @@ noeud_t * creerNoeud()
 
     return arbre;
 }
+
+void libererArbre(arbre_t arbre)
+{
+    arbre_t cur = arbre;
+    arbre_t temp = NULL;
+
+    Pile p = pile_initialiser(100);
+
+    while (cur != NULL || !pile_est_vide(p))
+    {
+        if (!cur)
+        {
+            cur = pile_depiler(p);
+        }
+
+        if (cur->horizontal)
+        {
+            pile_empiler(p, cur->horizontal);
+        }
+
+        temp = cur;
+        cur = cur->vertical;
+
+        free(temp);
+    }
+}
+
+

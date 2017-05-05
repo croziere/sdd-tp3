@@ -89,9 +89,11 @@ void afficher(arbre_t arbre, const char * motif) {
     char * cour_prefix;
     char * buf;
 
+    cour_prefix = (char *)malloc(sizeof(char)*30);
+
     while (cour != NULL || !pile_est_vide(chemin))
     {
-        cour_prefix = "\0";
+        *cour_prefix = '\0';
 
         if (cour == NULL)
         {
@@ -102,14 +104,17 @@ void afficher(arbre_t arbre, const char * motif) {
         {
             if (!pile_est_vide(prefixe))
             {
-                cour_prefix = pile_depiler(prefixe);
+                buf = pile_depiler(prefixe);
+                strcpy(cour_prefix, buf);
+                free(buf);
             }
         }
         else
         {
             if (!pile_est_vide(prefixe))
             {
-                cour_prefix = pile_sommet(prefixe);
+                buf = pile_sommet(prefixe);
+                strcpy(cour_prefix, buf);
             }
             pile_empiler(chemin, cour->horizontal);
         }
@@ -130,6 +135,7 @@ void afficher(arbre_t arbre, const char * motif) {
 
     pile_liberer(prefixe);
     pile_liberer(chemin);
+    free(cour_prefix);
 }
 
 void rechercheMot(arbre_t arbre, char *mot)

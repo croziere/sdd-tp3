@@ -60,6 +60,8 @@ void libererArbre(arbre_t arbre)
 
         free(temp);
     }
+
+    pile_liberer(p);
 }
 
 

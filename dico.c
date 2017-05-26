@@ -171,7 +171,7 @@ void dico_recherche_mot(arbre_t arbre, char *mot)
         }
         else
         {
-            printf("%s", mot);
+            printf("%s\n", mot);
         }
 
     }

@@ -3,12 +3,12 @@
 
 #include "arbre.h"
 
-arbre_t * recherchePrec(arbre_t * arbre, arbre_content_t value, bool * found);
-void insererMot(arbre_t * arbre, char * mot);
-void insererMotDirect(arbre_t *prec, char *value);
-void afficherArbre(arbre_t);
-void afficher(arbre_t arbre, const char *);
-void rechercheMot(arbre_t arbre, char * mot);
-void chargerDico(arbre_t*, const char *);
+arbre_t   * dico_recherche_prec(arbre_t* , arbre_content_t, bool*);
+void        dico_inserer_mot(arbre_t *, char *);
+void        dico_inserer_mot_direct(arbre_t *, char *);
+void        dico_afficher(arbre_t);
+void        dico_afficher_prefix(arbre_t, const char *);
+void        dico_recherche_mot(arbre_t, char *);
+void        dico_charger(arbre_t *, const char *);
 
 #endif

@@ -5,10 +5,11 @@
 #include <memory.h>
 #include "pile.h"
 
-arbre_t *recherchePrec(arbre_t *arbre, arbre_content_t value, bool *found) {
+arbre_t * dico_recherche_prec(arbre_t *arbre, arbre_content_t value, bool *found)
+{
+    arbre_t     cur = *arbre;
+    arbre_t   * prec = arbre;
     *found = false;
-    arbre_t cur = *arbre;
-    arbre_t * prec = arbre;
 
     while (cur != NULL && tolower(cur->content) < tolower(value))
     {
@@ -24,15 +25,16 @@ arbre_t *recherchePrec(arbre_t *arbre, arbre_content_t value, bool *found) {
     return prec;
 }
 
-void insererMot(arbre_t *arbre, char *mot) {
-    char * car = mot;
-    arbre_t cur = *arbre;
-    arbre_t *prec = arbre;
-    bool found = true;
+void dico_inserer_mot(arbre_t *arbre, char *mot)
+{
+    char *      car = mot;
+    arbre_t     cur = *arbre;
+    arbre_t   * prec = arbre;
+    bool        found = true;
 
     while (*car && found)
     {
-        prec = recherchePrec(prec, *car, &found);
+        prec = dico_recherche_prec(prec, *car, &found);
         cur = (*prec);
         if (found)
         {
@@ -44,19 +46,19 @@ void insererMot(arbre_t *arbre, char *mot) {
     if (!*car)
     {
 
-        insererContent(cur, (arbre_content_t) toupper(cur->content));
+        arbre_inserer_content_noeud(cur, (arbre_content_t) toupper(cur->content));
     }
     else
     {
-        insererMotDirect(prec, car);
+        dico_inserer_mot_direct(prec, car);
     }
 }
 
-void insererMotDirect(arbre_t *prec, char *value) {
-    noeud_t * noeud = NULL;
+void dico_inserer_mot_direct(arbre_t *prec, char *value)
+{
+    noeud_t    * noeud = arbre_creer_noeud();
 
-    noeud = creerNoeud();
-    insererContent(noeud, *value);
+    arbre_inserer_content_noeud(noeud, *value);
     noeud->horizontal = *prec;
     *prec = noeud;
     prec = &(noeud->vertical);
@@ -64,30 +66,32 @@ void insererMotDirect(arbre_t *prec, char *value) {
 
     while (*value)
     {
-        noeud = creerNoeud();
-        insererContent(noeud, *value);
+        noeud = arbre_creer_noeud();
+        arbre_inserer_content_noeud(noeud, *value);
         noeud->vertical = *prec;
         *prec = noeud;
         prec = &(noeud->vertical);
         value++;
     }
 
-    insererContent(noeud, (arbre_content_t)toupper(noeud->content));
+    arbre_inserer_content_noeud(noeud, (arbre_content_t) toupper(noeud->content));
 }
 
-void afficherArbre(arbre_t arbre)
+void dico_afficher(arbre_t arbre)
 {
-    afficher(arbre, "");
+    dico_afficher_prefix(arbre, "");
 }
 
-void afficher(arbre_t arbre, const char * motif) {
-    Pile prefixe = pile_initialiser(200);
-    Pile chemin = pile_initialiser(200);
+void dico_afficher_prefix(arbre_t arbre, const char *motif)
+{
+    Pile        prefixe = pile_initialiser(200);
+    Pile        chemin = pile_initialiser(200);
+    arbre_t     cour = arbre;
+    char      * cour_prefix;
+    char      * buf;
 
-    arbre_t cour = arbre;
-
-    char * cour_prefix;
-    char * buf;
+    char        prefix[30];
+    char      * pt_prefix = prefix;
 
     cour_prefix = (char *)malloc(sizeof(char)*30);
 
@@ -122,6 +126,7 @@ void afficher(arbre_t arbre, const char * motif) {
         if (cour->vertical != NULL)
         {
             asprintf(&buf, "%s%c", cour_prefix, tolower(cour->content));
+            pt_prefix++;
             pile_empiler(prefixe, buf);
         }
 
@@ -138,15 +143,15 @@ void afficher(arbre_t arbre, const char * motif) {
     free(cour_prefix);
 }
 
-void rechercheMot(arbre_t arbre, char *mot)
+void dico_recherche_mot(arbre_t arbre, char *mot)
 {
-    arbre_t * prec = &arbre;
-    char * car = mot;
-    bool found = true;
+    arbre_t     * prec = &arbre;
+    char        * car = mot;
+    bool          found = true;
 
     while (*car && found)
     {
-        prec = recherchePrec(prec, *car, &found);
+        prec = dico_recherche_prec(prec, *car, &found);
         if (found)
         {
             prec = &((*prec)->vertical);
@@ -160,21 +165,33 @@ void rechercheMot(arbre_t arbre, char *mot)
     }
     else
     {
-        afficher(*prec, mot);
+        if (*prec)
+        {
+            dico_afficher_prefix(*prec, mot);
+        }
+        else
+        {
+            printf("%s", mot);
+        }
+
     }
 }
 
-void chargerDico(arbre_t * arbre, const char * path)
+void dico_charger(arbre_t *arbre, const char *path)
 {
-    FILE *stream;
-    char buf[100];
+    FILE  * stream;
+    char    buf[100];
 
-    stream = fopen(path, "r");
+    if (!(stream = fopen(path, "r")))
+    {
+        perror("Erreur d'ouverture du fichier");
+        return;
+    }
 
     while (fgets(buf, 100, stream))
     {
         buf[strlen(buf) - 1] = '\0';
-        insererMot(arbre, buf);
+        dico_inserer_mot(arbre, buf);
     }
 
     fclose(stream);
